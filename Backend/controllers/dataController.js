@@ -312,7 +312,7 @@ export const getAllEmployees = async (req, res) => {
     const result = await connection.execute(
       `SELECT 
         emp_id, emp_name, email, role, 
-        region, status, is_temp_password
+        region, status, dob, is_temp_password
        FROM employee
        ORDER BY emp_name`,
       {},
@@ -328,6 +328,7 @@ export const getAllEmployees = async (req, res) => {
         role:             emp.ROLE,
         region:           emp.REGION,
         status:           emp.STATUS,
+        dob:              emp.DOB,
         is_temp_password: emp.IS_TEMP_PASSWORD,
       }))
     });
@@ -385,4 +386,27 @@ export const deleteTransaction = async (req, res) => {
     } finally {
         if (connection) await connection.close();
     }
+};
+
+// controller
+export const updateEmployee = async (req, res) => {
+  let connection;
+  try {
+    connection = await getPool().getConnection();
+    const { emp_id } = req.params;
+    const { role, status } = req.body;
+
+    await connection.execute(
+      `UPDATE employee SET role = :role, status = :status WHERE emp_id = :emp_id`,
+      { role, status, emp_id },
+      { autoCommit: true }
+    );
+
+    return res.status(200).json({ success: true, message: "Employee updated" });
+  } catch (error) {
+    console.error("Update employee error:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  } finally {
+    if (connection) await connection.close();
+  }
 };

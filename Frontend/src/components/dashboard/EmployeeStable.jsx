@@ -1,9 +1,19 @@
 // components/EmployeesTable.jsx
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ArrowUpRight, MoreHorizontal } from "lucide-react";
-import { EMPLOYEES_TABLE } from "../Constant";
 import { STATUS_BADGE } from "../Colors";
+import { getEmployees } from "../../redux/slices/dataAction"; // apna path check karo
 
 export default function EmployeesTable({ onViewAll }) {
+  const dispatch = useDispatch();
+  const { allEmployees, allEmployeesLoading, allEmployeesError } = useSelector(
+    (state) => state.transaction
+  );
+  useEffect(() => {
+    dispatch(getEmployees());
+  }, [dispatch]);
+
   return (
     <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl shadow-sm ring-1 ring-slate-100 dark:ring-slate-700 overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700">
@@ -20,44 +30,88 @@ export default function EmployeesTable({ onViewAll }) {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-slate-50 dark:bg-slate-700/50">
-              {["Employee","Email", "Role", "Status", ""].map(h => (
-                <th key={h} className="px-5 py-3 text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50 dark:divide-slate-700/50">
-            {EMPLOYEES_TABLE.map(emp => (
-              <tr key={emp.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group">
-                <td className="px-5 py-3.5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                      {emp.avatar}
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{emp.name}</p>
-                      <p className="text-[10px] text-slate-400">{emp.id}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-5 py-3.5 text-xs text-slate-500 dark:text-slate-400">{emp.email}</td>
-                <td className="px-5 py-3.5 text-xs text-slate-500 dark:text-slate-400">{emp.role}</td>
-                <td className="px-5 py-3.5">
-                  <span className={`text-[10px] font-semibold px-2 py-1 rounded-full ${STATUS_BADGE[emp.status] ?? ""}`}>
-                    {emp.status}
-                  </span>
-                </td>
-                <td className="px-5 py-3.5">
-                  <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400">
-                    <MoreHorizontal size={14} />
-                  </button>
-                </td>
+        {/* Loading state */}
+        {allEmployeesLoading && (
+          <div className="flex items-center justify-center py-10 text-xs text-slate-400">
+            Loading employees...
+          </div>
+        )}
+
+        {/* Error state */}
+        {allEmployeesError && (
+          <div className="flex items-center justify-center py-10 text-xs text-red-400">
+            Error: {error?.message ?? "Kuch galat ho gaya"}
+          </div>
+        )}
+
+        {/* Table */}
+        {!allEmployeesLoading && !allEmployeesError && (
+          <table className="w-full">
+            <thead>
+              <tr className="bg-slate-50 dark:bg-slate-700/50">
+                {["Employee", "Email", "Role", "Status", ""].map((h) => (
+                  <th
+                    key={h}
+                    className="px-5 py-3 text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wider"
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-50 dark:divide-slate-700/50">
+              {allEmployees?.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-10 text-xs text-slate-400">
+                    Koi employee nahi mila
+                  </td>
+                </tr>
+              ) : (
+                allEmployees?.map((emp) => (
+                  <tr
+                    key={emp.emp_id}
+                    className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group"
+                  >
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                          {emp.emp_name?.slice(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                            {emp.emp_name}
+                          </p>
+                          <p className="text-[10px] text-slate-400">{emp.emp_id}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5 text-xs text-slate-500 dark:text-slate-400">
+                      {emp.email}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">
+                        {emp.role ?? <span className="text-slate-300 dark:text-slate-600">—</span>}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span
+                        className={`text-[10px] font-semibold px-2 py-1 rounded-full ${STATUS_BADGE[emp.status] ?? ""
+                          }`}
+                      >
+                        {emp.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400">
+                        <MoreHorizontal size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

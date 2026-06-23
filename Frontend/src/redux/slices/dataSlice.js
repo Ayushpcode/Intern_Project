@@ -6,6 +6,7 @@ import {
   getTransactions,
   insertTransactionData,
   deleteTransaction,
+  updateEmployee,
 } from "./dataAction";
 
 const initialState = {
@@ -139,8 +140,17 @@ const transactionSlice = createSlice({
         state.deleteLoading = false;
         state.deleteError = action.payload?.message || "Delete failed";
       });
+
+    builder.addCase(updateEmployee.fulfilled, (state, action) => {
+      const { emp_id, changes } = action.payload;
+      const idx = state.allEmployees.findIndex((e) => e.emp_id === emp_id);
+      if (idx !== -1) {
+        state.allEmployees[idx] = { ...state.allEmployees[idx], ...changes };
+      }
+    });
   },
 });
 
-export const { resetInsertState, clearEmployees } = transactionSlice.actions;
+export const { resetInsertState, clearEmployees } =
+  transactionSlice.actions;
 export default transactionSlice.reducer;

@@ -43,8 +43,8 @@ const authSlice = createSlice({
       state.isFirstLogin = false;
     },
     updateEmployeeLocal: (state, action) => {
-      const { id, changes } = action.payload;
-      const emp = state.employees.find((e) => e.id === id);
+      const { emp_id, changes } = action.payload;
+      const emp = state.employees.find((e) => e.id === emp_id);
       if (emp) Object.assign(emp, changes);
     },
   },

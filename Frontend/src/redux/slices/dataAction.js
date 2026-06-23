@@ -90,8 +90,11 @@ export const getEmployees = createAsyncThunk(
   async (_, { rejectWithValue, getState }) => { 
     try {
       const token = getState().auth.token;
-      const res = await fetch(`${TRANSACTION_URL}/all-employees`, {
-       credentials: "include",
+       const res = await fetch(`${TRANSACTION_URL}/all-employees`, {
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data);
@@ -114,6 +117,25 @@ export const deleteTransaction = createAsyncThunk(
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data);
       return { trx_id }; // reducer mein remove karne ke liye
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateEmployee = createAsyncThunk(
+  "transaction/updateEmployee",
+  async ({ emp_id, changes }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/transaction/employee/${emp_id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(changes),
+      });
+      const data = await res.json();
+      if (!res.ok) return rejectWithValue(data);
+      return { emp_id, changes }; // slice mein local update ke liye
     } catch (error) {
       return rejectWithValue(error.message);
     }
