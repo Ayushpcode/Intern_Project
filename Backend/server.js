@@ -5,6 +5,8 @@ import dotenv from 'dotenv'
 import authRoute from './routes/authRoute.js'
 import adminRoute  from './routes/adminRoute.js'
 import dataRoute  from './routes/dataRoute.js'
+import cookieParser from 'cookie-parser'
+
 dotenv.config();
 
 const app = express();
@@ -15,6 +17,8 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+app.use(cookieParser())
 
 app.use('/api/auth',authRoute )
 app.use('/api/admin', adminRoute )

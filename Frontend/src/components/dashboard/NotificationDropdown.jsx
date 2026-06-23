@@ -8,14 +8,11 @@ import {
   rejectEmployee,
 } from "../../redux/slices/adminAction";
 
-const ROLES   = ["ADMIN", "CEO", "CIO", "EMPLOYEE"];
-const REGIONS = ["E1","E2","E3","W1","W2","W3","S1","S2","S3","N1","N2","N3"];
-
 // ── Approval Popup ────────────────────────────────────────────────────────────
 function ApprovalPopup({ user, onClose, onApprove, onReject }) {
-  const [role,   setRole]   = useState("");
+  const [role, setRole] = useState("");
   const [region, setRegion] = useState("");
-  const [step,   setStep]   = useState("confirm");
+  const [step, setStep] = useState("confirm");
   const ref = useRef();
 
   useEffect(() => {
@@ -124,8 +121,8 @@ function ApprovalPopup({ user, onClose, onApprove, onReject }) {
                     justifyContent: "center", gap: "6px", fontFamily: "inherit",
                     transition: "all 0.15s",
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background="#fef2f2"; e.currentTarget.style.borderColor="#f87171"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background="#fff5f5"; e.currentTarget.style.borderColor="#fecaca"; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "#fef2f2"; e.currentTarget.style.borderColor = "#f87171"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "#fff5f5"; e.currentTarget.style.borderColor = "#fecaca"; }}
                 >
                   <UserX size={14} /> Reject
                 </button>
@@ -141,8 +138,8 @@ function ApprovalPopup({ user, onClose, onApprove, onReject }) {
                     boxShadow: "0 4px 14px rgba(79,110,247,0.35)",
                     transition: "all 0.15s",
                   }}
-                  onMouseEnter={e => e.currentTarget.style.transform="translateY(-1px)"}
-                  onMouseLeave={e => e.currentTarget.style.transform="translateY(0)"}
+                  onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}
+                  onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
                 >
                   <UserCheck size={14} /> Approve
                 </button>
@@ -155,29 +152,46 @@ function ApprovalPopup({ user, onClose, onApprove, onReject }) {
               <p style={{ fontSize: "13px", color: "#555", marginBottom: "16px", fontWeight: "500" }}>
                 Assign role and region to <strong style={{ color: "#111" }}>{user.name}</strong>
               </p>
+             // Role input
               <div style={{ marginBottom: "14px" }}>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#374151", marginBottom: "6px" }}>
                   Role
                 </label>
-                <select value={role} onChange={e => setRole(e.target.value)} style={selectStyle} className="sel-focus">
-                  <option value="">Select role...</option>
-                  {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
-                </select>
+                <input
+                  type="text"
+                  value={role}
+                  onChange={e => setRole(e.target.value)}
+                  placeholder="e.g. MANAGER, HR, EMPLOYEE..."
+                  className="sel-focus"
+                  style={{
+                    width: "100%", height: "42px", padding: "0 12px",
+                    border: "1.5px solid #e5e7eb", borderRadius: "10px",
+                    fontSize: "13px", fontFamily: "inherit", outline: "none",
+                    background: "#f9fafb", color: "#111",
+                    boxSizing: "border-box",
+                  }}
+                />
               </div>
+
+
               <div style={{ marginBottom: "20px" }}>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#374151", marginBottom: "6px" }}>
                   Region
                 </label>
-                <select value={region} onChange={e => setRegion(e.target.value)} style={selectStyle} className="sel-focus">
-                  <option value="">Select region...</option>
-                  {["East","West","South","North"].map((zone, zi) => (
-                    <optgroup key={zone} label={`── ${zone} ──`}>
-                      {REGIONS.slice(zi * 3, zi * 3 + 3).map(r => (
-                        <option key={r} value={r}>{r}</option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
+                <input
+                  type="text"
+                  value={region}
+                  onChange={e => setRegion(e.target.value)}
+                  placeholder="e.g. NORTH, SOUTH, E1..."
+                  className="sel-focus"
+                  style={{
+                    width: "100%", height: "42px", padding: "0 12px",
+                    border: "1.5px solid #e5e7eb", borderRadius: "10px",
+                    fontSize: "13px", fontFamily: "inherit", outline: "none",
+                    background: "#f9fafb", color: "#111",
+                    boxSizing: "border-box",
+                  }}
+                />
               </div>
               {(role || region) && (
                 <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
@@ -318,13 +332,13 @@ export default function NotifDropdown({ notifs, setNotifs, open, setOpen }) {
 
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-                <p className="text-sm font-semibold text-slate-800">Notifications</p>
+              <p className="text-sm font-semibold text-slate-800">Notifications</p>
             </div>
 
             <div className="divide-y divide-slate-50 max-h-80 overflow-y-auto">
 
               {/* ── Fetch error ── */}
-              { role === "ADMIN" && fetchError && (
+              {role === "ADMIN" && fetchError && (
                 <div className="px-4 py-3 text-xs text-red-500 text-center">{fetchError}</div>
               )}
 
@@ -358,7 +372,7 @@ export default function NotifDropdown({ notifs, setNotifs, open, setOpen }) {
                 </>
               )}
 
-            
+
             </div>
 
             <div className="px-4 py-3 border-t border-slate-100">

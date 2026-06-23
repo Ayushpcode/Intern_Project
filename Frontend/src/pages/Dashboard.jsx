@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Filter } from "lucide-react";
-import { STATS_CARDS_CONFIG } from "../components/Constant";
+// import { STATS_CARDS_CONFIG } from "../components/Constant";
 import { getDashboardStats } from "../redux/slices/dataAction";
-import StatCard from "../components/dashboard/StatCard";
+// import StatCard from "../components/dashboard/StatCard";
 import EmployeesTable from "../components/dashboard/EmployeesTable";
 
 export default function Dashboard({ loading, onViewAllEmployees }) {
@@ -26,7 +26,7 @@ export default function Dashboard({ loading, onViewAllEmployees }) {
             <Filter size={12} /> Filter
           </button>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {/* <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {STATS_CARDS_CONFIG.map((config) => (
             <StatCard
               key={config.id}
@@ -40,7 +40,7 @@ export default function Dashboard({ loading, onViewAllEmployees }) {
               }}
             />
           ))}
-        </div>
+        </div> */}
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-1 gap-4">

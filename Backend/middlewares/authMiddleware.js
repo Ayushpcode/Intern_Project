@@ -1,8 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export const verifyAdmin = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = req.cookies?.token;
 
   if (!token) {
     return res.status(401).json({
@@ -32,8 +31,7 @@ export const verifyAdmin = (req, res, next) => {
 };
 
 export const verifyEmployee = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = req.cookies?.token;
 
   if (!token) {
     return res.status(401).json({
@@ -56,8 +54,7 @@ export const verifyEmployee = (req, res, next) => {
 
 export const verifyRoles = (...roles) => {
   return (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
+    const token = req.cookies?.token;
 
     if (!token) {
       return res.status(401).json({

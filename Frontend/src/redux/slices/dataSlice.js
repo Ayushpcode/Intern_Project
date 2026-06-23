@@ -5,6 +5,7 @@ import {
   getEmployeesByRegion,
   getTransactions,
   insertTransactionData,
+  deleteTransaction,
 } from "./dataAction";
 
 const initialState = {
@@ -28,6 +29,9 @@ const initialState = {
   allEmployees: [],
   allEmployeesLoading: false,
   allEmployeesError: null,
+
+  deleteLoading: false,
+  deleteError: null,
 };
 
 const transactionSlice = createSlice({
@@ -118,6 +122,22 @@ const transactionSlice = createSlice({
         state.allEmployeesLoading = false; // ← change
         state.allEmployeesError =
           action.payload?.message || "Failed to fetch employees"; // ← change
+      });
+
+    builder
+      .addCase(deleteTransaction.pending, (state) => {
+        state.deleteLoading = true;
+        state.deleteError = null;
+      })
+      .addCase(deleteTransaction.fulfilled, (state, action) => {
+        state.deleteLoading = false;
+        state.transactions = state.transactions.filter(
+          (t) => t.trx_id !== action.payload.trx_id, // ← UI se turant remove
+        );
+      })
+      .addCase(deleteTransaction.rejected, (state, action) => {
+        state.deleteLoading = false;
+        state.deleteError = action.payload?.message || "Delete failed";
       });
   },
 });

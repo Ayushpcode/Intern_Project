@@ -20,14 +20,6 @@ const initialState = {
   employeesError: null,
 };
 
-const decodeToken = (token) => {
-  try {
-    return JSON.parse(atob(token.split(".")[1]));
-  } catch (err) {
-    return null;
-  }
-};
-
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -41,15 +33,8 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.error = null;
       state.pendingEmail = null;
-      // Clear employee data too, so a new user who logs in doesn't
-      // briefly see the previous user's cached employee list.
       state.employees = [];
       state.employeesError = null;
-      // NOTE: removed the localStorage.removeItem("persist:auth") call.
-      // Mutating localStorage directly inside a reducer is a side effect
-      // and can fight with redux-persist's own write cycle. Prefer:
-      //   dispatch(logout());
-      //   persistor.purge();
     },
     clearError: (state) => {
       state.error = null;
@@ -57,8 +42,6 @@ const authSlice = createSlice({
     clearFirstLogin: (state) => {
       state.isFirstLogin = false;
     },
-    // Used by the Edit/Save UI on EmployeesPage to update a single
-    // employee locally until a real backend "update employee" endpoint exists.
     updateEmployeeLocal: (state, action) => {
       const { id, changes } = action.payload;
       const emp = state.employees.find((e) => e.id === id);
@@ -77,29 +60,31 @@ const authSlice = createSlice({
         state.loading = false;
         const payload = action.payload;
 
+        // Temp password case
         if (payload.is_temp_password) {
           state.isFirstLogin = true;
           state.isAuthenticated = true;
-          state.token = payload.temp_token;
+          state.token = payload.temp_token; // sirf is case mein token Redux mein
+          state.error = null;
           return;
         }
 
-        // Normal login
-        const decoded = decodeToken(payload.token);
-        if (!decoded) {
-          state.error = "Received an invalid token from server";
+        // Normal login — token cookie mein hai, response mein nahi
+        if (!payload.success) {
+          state.error = payload.message || "Login failed";
           return;
         }
 
         state.isAuthenticated = true;
-        state.token = payload.token;
-        state.role = decoded.role;
+        state.token = null; // cookie se kaam chalega
+        state.role = payload.user.role;
         state.user = {
-          id: decoded.id,
-          emp_id: decoded.emp_id,
-          name: decoded.name,
+          emp_id: payload.user.emp_id,
+          name: payload.user.name,
+          region: payload.user.region,
         };
         state.isFirstLogin = false;
+        state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -136,27 +121,29 @@ const authSlice = createSlice({
       })
       .addCase(changePassword.fulfilled, (state, action) => {
         state.loading = false;
-        const decoded = decodeToken(action.payload.token);
-        if (!decoded) {
-          state.error = "Received an invalid token from server";
+        const payload = action.payload;
+
+        // Token cookie mein set ho gaya backend se
+        if (!payload.success) {
+          state.error = payload.message || "Password change failed";
           return;
         }
 
         state.isAuthenticated = true;
-        state.token = action.payload.token;
-        state.role = decoded.role;
+        state.token = null; // cookie se kaam chalega
+        state.role = payload.user.role;
         state.user = {
-          id: decoded.id,
-          emp_id: decoded.emp_id,
-          name: decoded.name,
+          emp_id: payload.user.emp_id,
+          name: payload.user.name,
+          region: payload.user.region,
         };
         state.isFirstLogin = false;
+        state.error = null;
       })
       .addCase(changePassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Password change failed";
       });
-
   },
 });
 

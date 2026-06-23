@@ -9,7 +9,7 @@ export const getPendingEmployees = createAsyncThunk(
     try {
       const token = getState().auth.token;
       const res = await fetch(`${ADMIN_URL}/pending`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data);
@@ -17,21 +17,21 @@ export const getPendingEmployees = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const approveEmployee = createAsyncThunk(
   "admin/approve",
-  async ({ id, role, region }, { rejectWithValue, getState  }) => {
+  async ({ id, role, region }, { rejectWithValue, getState }) => {
     try {
       const token = getState().auth.token;
       const res = await fetch(`${ADMIN_URL}/approve/${id}`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ role, region }),
+        body: JSON.stringify({ role: role.toUpperCase(), region }),
       });
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data);
@@ -39,17 +39,17 @@ export const approveEmployee = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const rejectEmployee = createAsyncThunk(
   "admin/reject",
-  async (id, { rejectWithValue, getState  }) => {
+  async (id, { rejectWithValue, getState }) => {
     try {
       const token = getState().auth.token;
       const res = await fetch(`${ADMIN_URL}/reject/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data);
@@ -57,5 +57,5 @@ export const rejectEmployee = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );

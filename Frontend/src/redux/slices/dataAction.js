@@ -9,7 +9,7 @@ export const getEmployeesByRegion = createAsyncThunk(
     try {
       const token = getState().auth.token;
       const res = await fetch(`${TRANSACTION_URL}/employees?region=${region}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data);
@@ -28,9 +28,10 @@ export const insertTransactionData = createAsyncThunk(
       const token = getState().auth.token;
       const res = await fetch(`${TRANSACTION_URL}/data`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          
         },
         body: JSON.stringify(formData),
       });
@@ -49,7 +50,7 @@ export const getTransactions = createAsyncThunk(
     try {
       const token = getState().auth.token;
       const res = await fetch(`${TRANSACTION_URL}/list`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data);
@@ -66,11 +67,18 @@ export const getDashboardStats = createAsyncThunk(
     try {
       const token = getState().auth.token;
       const res = await fetch(`${TRANSACTION_URL}/data-stats`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
+
+      // ✅ Pehle ok check karo, THEN parse karo
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({ message: res.statusText }));
+        return rejectWithValue(errData);
+      }
+
       const data = await res.json();
-      if (!res.ok) return rejectWithValue(data);
       return data;
+
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -83,11 +91,29 @@ export const getEmployees = createAsyncThunk(
     try {
       const token = getState().auth.token;
       const res = await fetch(`${TRANSACTION_URL}/all-employees`, {
-        headers: { Authorization: `Bearer ${token}` },
+       credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data);
       return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// DELETE transaction
+export const deleteTransaction = createAsyncThunk(
+  "transaction/delete",
+  async (trx_id, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${TRANSACTION_URL}/transaction/${trx_id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) return rejectWithValue(data);
+      return { trx_id }; // reducer mein remove karne ke liye
     } catch (error) {
       return rejectWithValue(error.message);
     }

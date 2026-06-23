@@ -9,6 +9,7 @@ export const loginUser = createAsyncThunk(
             const res = await fetch( `${BASE_URL}/login`,{
                 method: "POST",
                 headers: {"Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify(credentials),
             })
 
@@ -64,7 +65,7 @@ export const changePassword = createAsyncThunk(
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          credentials: "include",
         },
         body: JSON.stringify({ new_password, confirm_password }),
       });

@@ -156,7 +156,7 @@ export const getTransactions = async (req, res) => {
 
         const result = await connection.execute(
             `SELECT 
-                region, deport, acc_number,
+                TRX_ID, region, deport, acc_number,
                 acc_name, trx_date, invoice_number,
                 volume, value, emp_name
              FROM data
@@ -168,6 +168,7 @@ export const getTransactions = async (req, res) => {
         return res.status(200).json({
             success: true,
             transactions: result.rows.map(row => ({
+                trx_id:         row.TRX_ID,
                 region:         row.REGION,
                 deport:         row.DEPORT,
                 acc_number:     row.ACC_NUMBER,
@@ -340,4 +341,48 @@ export const getAllEmployees = async (req, res) => {
   } finally {
     if (connection) await connection.close();
   }
+};
+
+export const deleteTransaction = async (req, res) => {
+    const { trx_id } = req.params;
+
+    if (!trx_id) {
+        return res.status(400).json({
+            success: false,
+            message: 'Transaction ID required'
+        });
+    }
+
+    let connection;
+    try {
+        connection = await getPool().getConnection();
+
+        const result = await connection.execute(
+            `DELETE FROM data WHERE trx_id = :trx_id`,
+            { trx_id: Number(trx_id) },
+            { autoCommit: true }
+        );
+
+        if (result.rowsAffected === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Transaction not found'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Transaction deleted successfully'
+        });
+
+    } catch (error) {
+        console.error('Delete transaction error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Database error',
+            error: error.message
+        });
+    } finally {
+        if (connection) await connection.close();
+    }
 };
