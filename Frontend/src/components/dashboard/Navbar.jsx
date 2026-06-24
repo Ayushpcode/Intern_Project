@@ -40,7 +40,7 @@ export default function Navbar({ collapsed, mobileOpen, setMobileOpen, active, d
       border-b border-slate-100 dark:border-slate-800
       flex items-center px-4 gap-4
       transition-all duration-300
-      ${collapsed ? "left-[68px]" : "left-0 lg:left-60"}
+      ${collapsed ? "left-17" : "left-0 lg:left-60"}
     `}>
       <button
         onClick={() => setMobileOpen(v => !v)}
@@ -75,7 +75,7 @@ export default function Navbar({ collapsed, mobileOpen, setMobileOpen, active, d
             onClick={() => setProfileOpen(v => !v)}
             className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
+            <div className="w-8 h-8 rounded-xl bg-linear-to-br from-yellow-500 to-red-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
               {initials}
             </div>
             <div className="hidden sm:block text-left">

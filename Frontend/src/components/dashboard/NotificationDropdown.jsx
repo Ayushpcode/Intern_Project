@@ -359,7 +359,7 @@ export default function NotifDropdown({ notifs, setNotifs, open, setOpen }) {
                       onClick={() => { setSelectedUser(user); setOpen(false); }}
                       className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-amber-50 transition-colors"
                     >
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
                         style={{ background: "linear-gradient(135deg,#4f6ef7,#7c3aed)" }}>
                         {user.avatar}
                       </div>
@@ -368,7 +368,7 @@ export default function NotifDropdown({ notifs, setNotifs, open, setOpen }) {
                         <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
                         <p className="text-[10px] text-amber-500 mt-0.5">Registered {user.time}</p>
                       </div>
-                      <span className="flex-shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-600 mt-1">
+                      <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-600 mt-1">
                         Pending
                       </span>
                     </button>

@@ -106,7 +106,7 @@ export default function EmployeeDashboard() {
         ) : (
           <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg p-4 mb-4 flex items-center gap-4">
             {/* Avatar */}
-            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center shrink-0">
               <User size={22} className="text-blue-600 dark:text-blue-400" />
             </div>
             <div className="flex-1 min-w-0">
@@ -117,7 +117,7 @@ export default function EmployeeDashboard() {
                 {employee?.email ?? "—"}
               </p>
             </div>
-            <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+            <div className="flex flex-col items-end gap-1.5 shrink-0">
               <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
                 <MapPin size={11} />
                 {employee?.region ?? user?.region ?? "—"}
@@ -235,7 +235,7 @@ export default function EmployeeDashboard() {
                       <td className="px-4 py-3 font-medium text-slate-700 dark:text-slate-300">
                         #{trx.invoice_number}
                       </td>
-                      <td className="px-4 py-3 text-slate-500 dark:text-slate-400 max-w-[120px] truncate">
+                      <td className="px-4 py-3 text-slate-500 dark:text-slate-400 max-w-30 truncate">
                         {trx.acc_name}
                       </td>
                       <td className="px-4 py-3 text-slate-500 dark:text-slate-400">

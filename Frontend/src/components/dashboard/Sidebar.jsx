@@ -34,7 +34,7 @@ export default function Sidebar({ active, setActive, collapsed, setCollapsed, mo
         border-r border-slate-100 dark:border-slate-800
         shadow-xl shadow-slate-200/50 dark:shadow-slate-950/50
         transition-all duration-300 ease-in-out
-        ${collapsed ? "w-[68px]" : "w-60"}
+        ${collapsed ? "w-17" : "w-60"}
         ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
 
@@ -70,7 +70,7 @@ export default function Sidebar({ active, setActive, collapsed, setCollapsed, mo
                 {isActive && (
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-blue-500 rounded-r-full" />
                 )}
-                <item.icon size={17} className={`flex-shrink-0 transition-transform duration-200 ${!isActive && "group-hover:scale-110"}`} />
+                <item.icon size={17} className={`shrink-0 transition-transform duration-200 ${!isActive && "group-hover:scale-110"}`} />
                 {!collapsed && <span className="text-sm truncate">{item.label}</span>}
               </button>
             );
@@ -82,7 +82,7 @@ export default function Sidebar({ active, setActive, collapsed, setCollapsed, mo
           <button
             onClick={handleLogout} 
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-600 dark:hover:text-rose-400 transition-all duration-200 ${collapsed ? "justify-center" : ""}`}>
-            <LogOut size={17} className="flex-shrink-0" />
+            <LogOut size={17} className="shrink-0" />
             {!collapsed && <span className="text-sm">Logout</span>}
           </button>
         </div>
