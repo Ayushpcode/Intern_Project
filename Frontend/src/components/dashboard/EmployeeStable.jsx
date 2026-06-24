@@ -40,7 +40,7 @@ export default function EmployeesTable({ onViewAll }) {
         {/* Error state */}
         {allEmployeesError && (
           <div className="flex items-center justify-center py-10 text-xs text-red-400">
-            Error: {error?.message ?? "Kuch galat ho gaya"}
+            Error: {allEmployeesError?.message ?? "Kuch galat ho gaya"}
           </div>
         )}
 

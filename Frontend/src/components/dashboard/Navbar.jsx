@@ -5,7 +5,7 @@ import { NAV_ITEMS } from "../Constant";
 import NotifDropdown from "./NotificationDropdown";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../redux/slices/authSlice";
+import { logout } from "../../redux/slices/authAction";
 
 export default function Navbar({ collapsed, mobileOpen, setMobileOpen, active, dark, setDark, notifs, setNotifs }) {
   const [notifOpen, setNotifOpen] = useState(false);

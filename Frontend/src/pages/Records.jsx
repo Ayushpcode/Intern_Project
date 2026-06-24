@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import * as XLSX from "xlsx";
 import { Download, Loader2, RefreshCw, Trash2, AlertTriangle } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { getTransactions, deleteTransaction } from "../redux/slices/dataAction";
@@ -69,10 +70,12 @@ export default function RecordsPage() {
 
     const [regionFilter, setRegionFilter] = useState(ALL);
     const [page, setPage] = useState(1);
-    const [confirmRecord, setConfirmRecord] = useState(null); 
+    const [confirmRecord, setConfirmRecord] = useState(null);
 
     const fetchRecords = () => dispatch(getTransactions());
     useEffect(() => { fetchRecords(); }, []);
+
+    console.log("Record keys:", records[0]);
 
     const handleDeleteClick = (record) => setConfirmRecord(record);
     const handleCancel = () => setConfirmRecord(null);
@@ -87,27 +90,25 @@ export default function RecordsPage() {
     const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
     const downloadRecord = (record) => {
-        const content = [
-            `Transaction Record`,
-            `==================`,
-            `Region         : ${record.region}`,
-            `Deport         : ${record.deport}`,
-            `Account Number : ${record.acc_number}`,
-            `Account Name   : ${record.acc_name}`,
-            `Trx Date       : ${record.trx_date}`,
-            `Invoice Number : ${record.invoice_number}`,
-            `Volume         : ${record.volume}`,
-            `Value          : ${record.value}`,
-            `Employee       : ${record.emp_name}`,
-        ].join("\n");
+        const data = [
+            {
+                "Region": record.region ?? "—",
+                "Deport": record.deport ?? "—",
+                "Account Number": record.acc_number ?? "—",
+                "Account Name": record.acc_name ?? "—",
+                "Trx Date": record.trx_date ?? "—",
+                "Invoice Number": record.invoice_number ?? "—",
+                "Volume": record.volume ?? "—",
+                "Value": record.value ?? "—",
+                "Employee": record.emp_name ?? "—",
+                "Created Date": record.created_at ?? "—",
+            }
+        ];
 
-        const blob = new Blob([content], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `record_${record.invoice_number}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Transaction");
+        XLSX.writeFile(wb, `record_${record.invoice_number}.xlsx`);
     };
 
     const COLUMNS = [
@@ -120,6 +121,7 @@ export default function RecordsPage() {
         { key: "volume", label: "Volume" },
         { key: "value", label: "Value" },
         { key: "emp_name", label: "Employee" },
+        { key: "created_at", label: "Created Date" },
     ];
 
     return (

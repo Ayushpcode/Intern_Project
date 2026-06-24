@@ -35,16 +35,15 @@ export default function EmployeesPage() {
 
   useEffect(() => {
     dispatch(getEmployees());
-  }, []);
+  }, [dispatch]);
 
-  // ✅ Sab DB se dynamic
   const uniqueRegions = [...new Set(data.map(e => e.region).filter(Boolean))].sort();
   const uniqueStatuses = [...new Set(data.map(e => e.status).filter(Boolean))].sort();
   const uniqueRoles = [...new Set(data.map(e => e.role).filter(Boolean))].sort();
 
   const filterStatuses = [ALL, ...uniqueStatuses];
   const filterRegions = [ALL, ...uniqueRegions];
-
+  
   const filtered = data.filter((e) => {
     const matchesSearch =
       search.trim() === "" ||
@@ -161,7 +160,7 @@ export default function EmployeesPage() {
               ) : (
                 paginated.map((emp) => {
                   // ✅ Reject walo ka edit band
-                  const isRejected = emp.status?.toLowerCase() === "REJECTED";
+                  const isRejected = emp.status === "REJECTED";
 
                   return (
                     <tr key={emp.emp_id} className={`transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/30 ${isRejected ? "opacity-60" : ""}`}>

@@ -63,11 +63,44 @@ export const changePassword = createAsyncThunk(
     try {
       const res = await fetch(`${BASE_URL}/change-password`, {
         method: "PATCH",
+        credentials: "include",
         headers: {
-          "Content-Type": "application/json",
-          credentials: "include",
+          "Content-Type": "application/json",          
         },
         body: JSON.stringify({ new_password, confirm_password }),
+      });
+      const data = await res.json();
+      if (!res.ok) return rejectWithValue(data);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${BASE_URL}/logout`, {
+        method: "POST",
+        credentials: "include", // ✅ cookie clear karwane ke liye
+      });
+      const data = await res.json();
+      if (!res.ok) return rejectWithValue(data);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const checkAuth = createAsyncThunk(
+  "auth/checkAuth",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${BASE_URL}/check-auth`, {
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data);

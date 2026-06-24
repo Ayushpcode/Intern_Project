@@ -54,11 +54,6 @@ export const approveEmployee = async (req, res) => {
     return res.status(400).json({ success: false, message: "Role and region are required." });
   }
 
-  const validRoles = ["ADMIN", "CEO", "CIO", "EMPLOYEE"];
-  if (!validRoles.includes(role)) {
-    return res.status(400).json({ success: false, message: "Invalid role. Allowed: ADMIN, CEO, CIO, EMPLOYEE" });
-  }
-
   let connection;
   try {
     connection = await getPool().getConnection();

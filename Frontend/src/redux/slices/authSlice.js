@@ -4,6 +4,8 @@ import {
   checkStatus,
   loginUser,
   registerUser,
+  logout,
+  checkAuth,
 } from "./authAction";
 
 const initialState = {
@@ -18,6 +20,7 @@ const initialState = {
   employees: [],
   employeesLoading: false,
   employeesError: null,
+  authChecked: false,
 };
 
 const authSlice = createSlice({
@@ -25,17 +28,6 @@ const authSlice = createSlice({
   initialState,
 
   reducers: {
-    logout: (state) => {
-      state.user = null;
-      state.token = null;
-      state.role = null;
-      state.isFirstLogin = false;
-      state.isAuthenticated = false;
-      state.error = null;
-      state.pendingEmail = null;
-      state.employees = [];
-      state.employeesError = null;
-    },
     clearError: (state) => {
       state.error = null;
     },
@@ -64,7 +56,7 @@ const authSlice = createSlice({
         if (payload.is_temp_password) {
           state.isFirstLogin = true;
           state.isAuthenticated = true;
-          state.token = payload.temp_token; // sirf is case mein token Redux mein
+          state.token = null;
           state.error = null;
           return;
         }
@@ -82,6 +74,7 @@ const authSlice = createSlice({
           emp_id: payload.user.emp_id,
           name: payload.user.name,
           region: payload.user.region,
+          role: payload.user.role,
         };
         state.isFirstLogin = false;
         state.error = null;
@@ -144,9 +137,51 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload?.message || "Password change failed";
       });
+
+    // ── Logout ──
+    builder
+      .addCase(logout.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        // state reset
+        state.user = null;
+        state.token = null;
+        state.role = null;
+        state.isFirstLogin = false;
+        state.isAuthenticated = false;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(logout.rejected, (state) => {
+        // error aaye tab bhi state clear karo
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+      });
+
+    builder
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.authChecked = true;
+        state.isAuthenticated = true;
+        state.user = {
+          emp_id: action.payload.user.emp_id,
+          name: action.payload.user.name,
+          region: action.payload.user.region,
+          role: action.payload.user.role,
+        };
+        state.role = action.payload.user.role;
+      })
+      .addCase(checkAuth.rejected, (state) => {
+        state.authChecked = true;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.role = null;
+      });
   },
 });
 
-export const { logout, clearError, clearFirstLogin, updateEmployeeLocal } =
+export const { clearError, clearFirstLogin, updateEmployeeLocal } =
   authSlice.actions;
 export default authSlice.reducer;

@@ -5,7 +5,7 @@ import bergerLogo from "../../assets/imag.png";
 import bergerLogo2 from "../../assets/image.png"; 
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../redux/slices/authSlice";
+import { logout } from "../../redux/slices/authAction";
 
 export default function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
   const { role } = useSelector((state) => state.auth);

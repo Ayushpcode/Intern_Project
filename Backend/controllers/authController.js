@@ -46,6 +46,9 @@ export const login = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "15m" },
       );
+
+      res.cookie('token', tempToken, COOKIE_OPTIONS);
+      
       return res.status(200).json({
         success: true,
         is_temp_password: true,
@@ -132,8 +135,7 @@ export const register = async (req, res) => {
 export const changePassword = async (req, res) => {
   const { new_password, confirm_password } = req.body;
 
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = req.cookies?.token;
 
   if (!token) {
     return res.status(401).json({ success: false, message: "Access denied. No token provided." });
@@ -147,6 +149,9 @@ export const changePassword = async (req, res) => {
   }
 
   const emp_id = decoded.emp_id;
+
+  console.log("Decoded token:", decoded); // ✅ yahan dekho
+  console.log("emp_id:", decoded.emp_id);
 
   if (!new_password || !confirm_password) {
     return res.status(400).json({ success: false, message: "All fields are required." });

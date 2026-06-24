@@ -61,30 +61,6 @@ export const getTransactions = createAsyncThunk(
   }
 );
 
-export const getDashboardStats = createAsyncThunk(
-  "transaction/getDashboardStats",
-  async (_, { rejectWithValue, getState }) => {
-    try {
-      const token = getState().auth.token;
-      const res = await fetch(`${TRANSACTION_URL}/data-stats`, {
-        credentials: "include",
-      });
-
-      // ✅ Pehle ok check karo, THEN parse karo
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({ message: res.statusText }));
-        return rejectWithValue(errData);
-      }
-
-      const data = await res.json();
-      return data;
-
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
 export const getEmployees = createAsyncThunk(
   "transaction/getAll",
   async (_, { rejectWithValue, getState }) => { 
@@ -136,6 +112,25 @@ export const updateEmployee = createAsyncThunk(
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data);
       return { emp_id, changes }; // slice mein local update ke liye
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const getDashboardStats = createAsyncThunk(
+  "transaction/getDashboardStats",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${TRANSACTION_URL}/data-stats`, {
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) return rejectWithValue(data);
+      return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }

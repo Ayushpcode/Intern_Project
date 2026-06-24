@@ -5,17 +5,14 @@ import App from './App.jsx'
 import '@fontsource/playfair-display/700.css';
 import '@fontsource/playfair-display/900.css';
 import { BrowserRouter } from 'react-router-dom'
-import { persistor, store } from './redux/Store.js'
+import { store } from './redux/Store.js'
 import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
           <App />
-        </PersistGate>
       </Provider>
     </BrowserRouter>
   </StrictMode>,

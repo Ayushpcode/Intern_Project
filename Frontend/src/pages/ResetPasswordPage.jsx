@@ -8,7 +8,7 @@ export function ResetPasswordPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { loading, error, token, isAuthenticated, isFirstLogin, role } = useSelector((state) => state.auth);
+  const { loading, error, isAuthenticated, isFirstLogin, role } = useSelector((state) => state.auth);
 
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const ROLE_ROUTES = {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await dispatch(changePassword({ new_password: newPassword, confirm_password: confirmPassword, token }));
+    const result = await dispatch(changePassword({ new_password: newPassword, confirm_password: confirmPassword }));
     if (changePassword.fulfilled.match(result)) {
       setSuccess(true);
       setTimeout(() => navigate("/"), 1500);

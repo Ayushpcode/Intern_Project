@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
-  getDashboardStats,
   getEmployees,
   getEmployeesByRegion,
   getTransactions,
   insertTransactionData,
   deleteTransaction,
   updateEmployee,
+  getDashboardStats,
 } from "./dataAction";
 
 const initialState = {
@@ -96,21 +96,6 @@ const transactionSlice = createSlice({
       });
 
     builder
-      .addCase(getDashboardStats.pending, (state) => {
-        state.dashboardLoading = true;
-        state.dashboardError = null;
-      })
-      .addCase(getDashboardStats.fulfilled, (state, action) => {
-        state.dashboardLoading = false;
-        state.dashboardStats = action.payload;
-      })
-      .addCase(getDashboardStats.rejected, (state, action) => {
-        state.dashboardLoading = false;
-        state.dashboardError =
-          action.payload?.message || "Failed to fetch stats";
-      });
-
-    builder
       .addCase(getEmployees.pending, (state) => {
         state.allEmployeesLoading = true; // ← change
         state.allEmployeesError = null; // ← change
@@ -148,6 +133,20 @@ const transactionSlice = createSlice({
         state.allEmployees[idx] = { ...state.allEmployees[idx], ...changes };
       }
     });
+
+    builder
+  .addCase(getDashboardStats.pending, (state) => {
+    state.dashboardLoading = true;
+    state.dashboardError = null;
+  })
+  .addCase(getDashboardStats.fulfilled, (state, action) => {
+    state.dashboardLoading = false;
+    state.dashboardStats = action.payload;
+  })
+  .addCase(getDashboardStats.rejected, (state, action) => {
+    state.dashboardLoading = false;
+    state.dashboardError = action.payload?.message || "Failed to fetch stats";
+  });
   },
 });
 
