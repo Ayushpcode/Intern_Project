@@ -136,3 +136,22 @@ export const getDashboardStats = createAsyncThunk(
     }
   }
 );
+
+export const getEmployeeStats = createAsyncThunk(
+  "transaction/getEmployeeStats",
+  async (emp_id, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${TRANSACTION_URL}/employee/${emp_id}/stats`, {
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) return rejectWithValue(data);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);

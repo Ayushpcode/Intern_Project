@@ -10,6 +10,11 @@ export default function EmployeesTable({ onViewAll }) {
   const { allEmployees, allEmployeesLoading, allEmployeesError } = useSelector(
     (state) => state.transaction
   );
+
+  const recentEmployees = [...(allEmployees ?? [])]
+  .sort((b, a) => new Date(b.created_at) - new Date(a.created_at))
+  .slice(0, 5);
+
   useEffect(() => {
     dispatch(getEmployees());
   }, [dispatch]);
@@ -60,14 +65,14 @@ export default function EmployeesTable({ onViewAll }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-slate-700/50">
-              {allEmployees?.length === 0 ? (
+              {recentEmployees?.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="text-center py-10 text-xs text-slate-400">
                     Koi employee nahi mila
                   </td>
                 </tr>
               ) : (
-                allEmployees?.map((emp) => (
+                recentEmployees?.map((emp) => (
                   <tr
                     key={emp.emp_id}
                     className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group"

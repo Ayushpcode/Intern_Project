@@ -7,6 +7,7 @@ import {
   deleteTransaction,
   updateEmployee,
   getDashboardStats,
+  getEmployeeStats,
 } from "./dataAction";
 
 const initialState = {
@@ -33,6 +34,9 @@ const initialState = {
 
   deleteLoading: false,
   deleteError: null,
+
+  employeeStats: null,
+  employeeStatsLoading: false,
 };
 
 const transactionSlice = createSlice({
@@ -135,21 +139,33 @@ const transactionSlice = createSlice({
     });
 
     builder
-  .addCase(getDashboardStats.pending, (state) => {
-    state.dashboardLoading = true;
-    state.dashboardError = null;
-  })
-  .addCase(getDashboardStats.fulfilled, (state, action) => {
-    state.dashboardLoading = false;
-    state.dashboardStats = action.payload;
-  })
-  .addCase(getDashboardStats.rejected, (state, action) => {
-    state.dashboardLoading = false;
-    state.dashboardError = action.payload?.message || "Failed to fetch stats";
-  });
+      .addCase(getDashboardStats.pending, (state) => {
+        state.dashboardLoading = true;
+        state.dashboardError = null;
+      })
+      .addCase(getDashboardStats.fulfilled, (state, action) => {
+        state.dashboardLoading = false;
+        state.dashboardStats = action.payload;
+      })
+      .addCase(getDashboardStats.rejected, (state, action) => {
+        state.dashboardLoading = false;
+        state.dashboardError =
+          action.payload?.message || "Failed to fetch stats";
+      });
+
+    builder
+      .addCase(getEmployeeStats.pending, (state) => {
+        state.employeeStatsLoading = true;
+      })
+      .addCase(getEmployeeStats.fulfilled, (state, action) => {
+        state.employeeStatsLoading = false;
+        state.employeeStats = action.payload;
+      })
+      .addCase(getEmployeeStats.rejected, (state) => {
+        state.employeeStatsLoading = false;
+      });
   },
 });
 
-export const { resetInsertState, clearEmployees } =
-  transactionSlice.actions;
+export const { resetInsertState, clearEmployees } = transactionSlice.actions;
 export default transactionSlice.reducer;

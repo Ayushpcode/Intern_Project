@@ -8,6 +8,8 @@ import {
   rejectEmployee,
 } from "../../redux/slices/adminAction";
 
+const ROLES = ["ADMIN", "CEO", "CIO", "EMPLOYEE"];
+
 // ── Approval Popup ────────────────────────────────────────────────────────────
 function ApprovalPopup({ user, onClose, onApprove, onReject }) {
   const [role, setRole] = useState("");
@@ -36,13 +38,14 @@ function ApprovalPopup({ user, onClose, onApprove, onReject }) {
     appearance: "none",
     backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
     backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center",
+    boxSizing: "border-box",
   };
 
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 9999,
       background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)",
-      display: "flex", alignItems: "center", justifyContent: "center",
+      display: "flex", alignItems: "flex-start", justifyContent: "center",
     }}>
       <div ref={ref} style={{
         background: "#fff", borderRadius: "20px",
@@ -152,28 +155,26 @@ function ApprovalPopup({ user, onClose, onApprove, onReject }) {
               <p style={{ fontSize: "13px", color: "#555", marginBottom: "16px", fontWeight: "500" }}>
                 Assign role and region to <strong style={{ color: "#111" }}>{user.name}</strong>
               </p>
-             // Role input
+
+              {/* ✅ Role Dropdown */}
               <div style={{ marginBottom: "14px" }}>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#374151", marginBottom: "6px" }}>
                   Role
                 </label>
-                <input
-                  type="text"
+                <select
                   value={role}
                   onChange={e => setRole(e.target.value)}
-                  placeholder="e.g. MANAGER, HR, EMPLOYEE..."
                   className="sel-focus"
-                  style={{
-                    width: "100%", height: "42px", padding: "0 12px",
-                    border: "1.5px solid #e5e7eb", borderRadius: "10px",
-                    fontSize: "13px", fontFamily: "inherit", outline: "none",
-                    background: "#f9fafb", color: "#111",
-                    boxSizing: "border-box",
-                  }}
-                />
+                  style={selectStyle}
+                >
+                  <option value="">Select a role...</option>
+                  {ROLES.map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
               </div>
 
-
+              {/* Region — free text input */}
               <div style={{ marginBottom: "20px" }}>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#374151", marginBottom: "6px" }}>
                   Region
@@ -182,7 +183,7 @@ function ApprovalPopup({ user, onClose, onApprove, onReject }) {
                   type="text"
                   value={region}
                   onChange={e => setRegion(e.target.value)}
-                  placeholder="e.g. NORTH, SOUTH, E1..."
+                  placeholder="e.g. N1, SOUTH, E2..."
                   className="sel-focus"
                   style={{
                     width: "100%", height: "42px", padding: "0 12px",
@@ -193,6 +194,8 @@ function ApprovalPopup({ user, onClose, onApprove, onReject }) {
                   }}
                 />
               </div>
+
+              {/* Live preview badges */}
               {(role || region) && (
                 <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
                   {role && (
@@ -207,6 +210,7 @@ function ApprovalPopup({ user, onClose, onApprove, onReject }) {
                   )}
                 </div>
               )}
+
               <div style={{ display: "flex", gap: "10px" }}>
                 <button
                   onClick={() => setStep("confirm")}
@@ -337,7 +341,7 @@ export default function NotifDropdown({ notifs, setNotifs, open, setOpen }) {
 
             <div className="divide-y divide-slate-50 max-h-80 overflow-y-auto">
 
-              {/* ── Fetch error ── */}
+              {/* Fetch error */}
               {role === "ADMIN" && fetchError && (
                 <div className="px-4 py-3 text-xs text-red-500 text-center">{fetchError}</div>
               )}
@@ -372,6 +376,12 @@ export default function NotifDropdown({ notifs, setNotifs, open, setOpen }) {
                 </>
               )}
 
+              {/* Empty state */}
+              {role === "ADMIN" && !fetchError && pendingUsers.length === 0 && (
+                <div className="px-4 py-8 text-center text-xs text-slate-400">
+                  No pending approvals
+                </div>
+              )}
 
             </div>
 

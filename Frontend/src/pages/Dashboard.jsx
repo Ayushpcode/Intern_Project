@@ -1,25 +1,29 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Filter, Users, UserCheck, TrendingUp, BarChart2, DollarSign, Clock } from "lucide-react";
+import { Filter, Users, UserCheck, TrendingUp, BarChart2, Clock, IndianRupee } from "lucide-react";
 import { getDashboardStats } from "../redux/slices/dataAction";
 import EmployeesTable from "../components/dashboard/EmployeesTable";
+import EmployeeDashboard from "./EmpDashboard";
 
 export default function Dashboard({ loading, onViewAllEmployees }) {
   const dispatch = useDispatch();
   const { dashboardStats: stats, dashboardLoading } = useSelector((state) => state.transaction);
   const { user } = useSelector((state) => state.auth);
-  console.log("AUTH STATE:", user);
+
+  const role = user?.role?.toLowerCase();
+  const isEmployee = role === "employee";
+  const isAdmin = role === "admin" || role === "ceo" || role === "cio";
 
   useEffect(() => {
-    dispatch(getDashboardStats());
-  }, [dispatch]);
+    if (!isEmployee) {
+      dispatch(getDashboardStats());
+    }
+  }, [dispatch, isEmployee]);
 
-  const isAdmin = user?.role?.toLowerCase() === "admin" || user?.role?.toLowerCase() === "ceo";
-
-  const calcChange = (val) => {
-    if (val === null || val === undefined) return null;
-    return val;
-  };
+  // ✅ Employee ka alag dashboard
+  if (isEmployee) {
+    return <EmployeeDashboard />;
+  }
 
   const statCards = [
     {
@@ -63,7 +67,7 @@ export default function Dashboard({ loading, onViewAllEmployees }) {
       value: stats?.totalValue ? `₹${stats.totalValue.toLocaleString("en-IN")}` : "₹0",
       sub: stats?.valueChange !== null ? `${stats?.valueChange > 0 ? "+" : ""}${stats?.valueChange}% last month` : "No change data",
       change: stats?.valueChange,
-      icon: <DollarSign size={14} />,
+      icon: <IndianRupee size={14} />,
       color: "text-green-600",
       border: "border-l-green-400",
     },
@@ -78,6 +82,7 @@ export default function Dashboard({ loading, onViewAllEmployees }) {
     },
   ];
 
+  // ✅ Admin / CEO / CIO ka dashboard
   return (
     <div className="space-y-6">
       <section>
@@ -91,11 +96,9 @@ export default function Dashboard({ loading, onViewAllEmployees }) {
           </button>
         </div>
 
-        {/* ✅ Sirf Admin/CEO ko dikhega */}
         {isAdmin && (
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6">
             {dashboardLoading ? (
-              // Loading skeleton
               Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg p-4 h-24 animate-pulse" />
               ))
@@ -122,9 +125,12 @@ export default function Dashboard({ loading, onViewAllEmployees }) {
         )}
       </section>
 
-      <section className="grid grid-cols-1 gap-4">
-        <EmployeesTable onViewAll={onViewAllEmployees} />
-      </section>
+      {/* ✅ Sirf Admin/CEO/CIO ko EmployeesTable dikhega */}
+      {isAdmin && (
+        <section className="grid grid-cols-1 gap-4">
+          <EmployeesTable onViewAll={onViewAllEmployees} />
+        </section>
+      )}
     </div>
   );
 }

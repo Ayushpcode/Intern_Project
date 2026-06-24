@@ -440,3 +440,119 @@ export const updateEmployee = async (req, res) => {
     if (connection) await connection.close();
   }
 };
+
+// controller mein add karo
+export const getEmployeeStats = async (req, res) => {
+  const { emp_id } = req.params;
+  
+  let connection;
+  try {
+    connection = await getPool().getConnection();
+
+    // Pehle emp_name nikalo
+    const empResult = await connection.execute(
+      `SELECT emp_name, email, region, status, role 
+       FROM employee 
+       WHERE emp_id = :emp_id`,
+      { emp_id },
+      { outFormat: OracleDB.OUT_FORMAT_OBJECT }
+    );
+
+    if (empResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Employee not found" });
+    }
+
+    const emp = empResult.rows[0];
+
+    // Uski transactions
+    const [statsResult, thisMonth, lastMonth, recentTrx] = await Promise.all([
+      // Overall stats
+      connection.execute(
+        `SELECT 
+          COUNT(*)    AS TOTAL_TRANSACTIONS,
+          SUM(volume) AS TOTAL_VOLUME,
+          SUM(value)  AS TOTAL_VALUE
+         FROM data 
+         WHERE emp_name = :emp_name`,
+        { emp_name: emp.EMP_NAME },
+        { outFormat: OracleDB.OUT_FORMAT_OBJECT }
+      ),
+      // This month
+      connection.execute(
+        `SELECT COUNT(*) AS TRX, SUM(volume) AS VOL, SUM(value) AS VAL
+         FROM data 
+         WHERE emp_name = :emp_name
+         AND TRUNC(trx_date, 'MM') = TRUNC(SYSDATE, 'MM')`,
+        { emp_name: emp.EMP_NAME },
+        { outFormat: OracleDB.OUT_FORMAT_OBJECT }
+      ),
+      // Last month
+      connection.execute(
+        `SELECT COUNT(*) AS TRX, SUM(volume) AS VOL, SUM(value) AS VAL
+         FROM data 
+         WHERE emp_name = :emp_name
+         AND TRUNC(trx_date, 'MM') = ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)`,
+        { emp_name: emp.EMP_NAME },
+        { outFormat: OracleDB.OUT_FORMAT_OBJECT }
+      ),
+      // Recent 5 transactions
+      connection.execute(
+        `SELECT trx_id, region, deport, acc_number, acc_name, 
+                trx_date, invoice_number, volume, value
+         FROM data 
+         WHERE emp_name = :emp_name
+         ORDER BY trx_date DESC
+         FETCH FIRST 5 ROWS ONLY`,
+        { emp_name: emp.EMP_NAME },
+        { outFormat: OracleDB.OUT_FORMAT_OBJECT }
+      ),
+    ]);
+
+    const calcChange = (curr, prev) => {
+      if (!prev || prev === 0) return null;
+      return Math.round(((curr - prev) / prev) * 100);
+    };
+
+    return res.status(200).json({
+      success: true,
+      employee: {
+        emp_id,
+        emp_name: emp.EMP_NAME,
+        email: emp.EMAIL,
+        region: emp.REGION,
+        status: emp.STATUS,
+        role: emp.ROLE,
+      },
+      stats: {
+        totalTransactions: statsResult.rows[0].TOTAL_TRANSACTIONS || 0,
+        totalVolume: statsResult.rows[0].TOTAL_VOLUME || 0,
+        totalValue: statsResult.rows[0].TOTAL_VALUE || 0,
+        thisMonth: {
+          transactions: thisMonth.rows[0].TRX || 0,
+          volume: thisMonth.rows[0].VOL || 0,
+          value: thisMonth.rows[0].VAL || 0,
+        },
+        transactionChange: calcChange(thisMonth.rows[0].TRX, lastMonth.rows[0].TRX),
+        volumeChange: calcChange(thisMonth.rows[0].VOL, lastMonth.rows[0].VOL),
+        valueChange: calcChange(thisMonth.rows[0].VAL, lastMonth.rows[0].VAL),
+      },
+      recentTransactions: recentTrx.rows.map(row => ({
+        trx_id: row.TRX_ID,
+        region: row.REGION,
+        deport: row.DEPORT,
+        acc_number: row.ACC_NUMBER,
+        acc_name: row.ACC_NAME,
+        trx_date: row.TRX_DATE,
+        invoice_number: row.INVOICE_NUMBER,
+        volume: row.VOLUME,
+        value: row.VALUE,
+      })),
+    });
+
+  } catch (error) {
+    console.error("Employee stats error:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  } finally {
+    if (connection) await connection.close();
+  }
+};
