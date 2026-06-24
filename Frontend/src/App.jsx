@@ -50,8 +50,8 @@ function AppLayout() {
         active={active}
         notifs={notifs} setNotifs={setNotifs}
       />
-      <main className={`pt-16 transition-all duration-300 ${collapsed ? "lg:pl-[68px]" : "lg:pl-60"}`}>
-        <div className="p-4 sm:p-6 max-w-[1600px] mx-auto">
+      <main className={`pt-16 transition-all duration-300 ${collapsed ? "lg:pl-17" : "lg:pl-60"}`}>
+        <div className="p-4 sm:p-6 max-w-400 mx-auto">
           {renderPage}
         </div>
       </main>

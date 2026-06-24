@@ -99,7 +99,7 @@ export default function EmployeesPage() {
       {/* Search + Filters */}
       <div className="flex flex-wrap items-end gap-4">
         {/* Search */}
-        <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
+        <div className="flex flex-col gap-1 flex-1 min-w-50">
           <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-1">Search</label>
           <div className="relative">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -168,7 +168,7 @@ export default function EmployeesPage() {
                       {/* Employee */}
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                          <div className="w-8 h-8 rounded-xl bg-linear-to-br from-blue-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
                             {emp.emp_name?.slice(0, 2).toUpperCase()}
                           </div>
                           <div>
@@ -221,7 +221,7 @@ export default function EmployeesPage() {
                           </select>
                         ) : (
                           <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1 rounded-full ${STATUS_BADGE[emp.status] ?? "bg-slate-100 text-slate-500"}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${STATUS_DOT[emp.status] ?? "bg-slate-400"}`} />
+                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT[emp.status] ?? "bg-slate-400"}`} />
                             {emp.status ?? "—"}
                           </span>
                         )}

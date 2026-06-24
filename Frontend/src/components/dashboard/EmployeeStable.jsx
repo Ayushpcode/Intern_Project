@@ -79,7 +79,7 @@ export default function EmployeesTable({ onViewAll }) {
                   >
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-linear-to-br from-blue-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        <div className="w-8 h-8 rounded-xl bg-linear-to-br from-blue-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
                           {emp.emp_name?.slice(0, 2).toUpperCase()}
                         </div>
                         <div>
