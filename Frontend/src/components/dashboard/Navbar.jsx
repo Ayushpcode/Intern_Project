@@ -1,11 +1,12 @@
 // components/Navbar.jsx
 import { useState, useRef, useEffect } from "react";
-import { Menu, X, Search, ChevronDown } from "lucide-react";
+import { Menu, X, Search, ChevronDown, Download } from "lucide-react";
 import { NAV_ITEMS } from "../Constant";
 import NotifDropdown from "./NotificationDropdown";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/slices/authAction";
+import { downloadEmployeeExcel } from "../../utils/downloadExcel";
 
 export default function Navbar({ collapsed, mobileOpen, setMobileOpen, active, dark, setDark, notifs, setNotifs }) {
   const [notifOpen, setNotifOpen] = useState(false);
@@ -14,18 +15,27 @@ export default function Navbar({ collapsed, mobileOpen, setMobileOpen, active, d
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-
   const { user, role } = useSelector((state) => state.auth);
+  const { employeeStats } = useSelector((state) => state.transaction);
+
   const initials = user?.name
     ? user.name.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()
     : "?";
-    
+
   const title = NAV_ITEMS.find(n => n.id === active)?.label ?? "Dashboard";
 
   const handleLogout = () => {
     dispatch(logout());
     navigate("/");
   };
+
+  const handleDownload = () => {
+    downloadEmployeeExcel(employeeStats, user?.name);
+  };
+
+  const normalizedRole = role?.toLowerCase();
+  const showBell = normalizedRole === "admin";
+  const showDownload = normalizedRole === "employee" || normalizedRole === "ceo" || normalizedRole === "cio";
 
   useEffect(() => {
     const fn = e => { if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false); };
@@ -54,20 +64,31 @@ export default function Navbar({ collapsed, mobileOpen, setMobileOpen, active, d
         <p className="text-[10px] text-slate-400">Berger Paints</p>
       </div>
 
-      <div className="flex-1 max-w-sm mx-4 hidden md:block">
-        <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search employees, reports..."
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
-          />
-        </div>
-      </div>
-
       <div className="ml-auto flex items-center gap-1">
-        {role?.toLowerCase() === "admin" && (
+
+        {/* Admin → Bell */}
+        {showBell && (
           <NotifDropdown notifs={notifs} setNotifs={setNotifs} open={notifOpen} setOpen={setNotifOpen} />
+        )}
+
+        {/* Employee / CEO / CIO → Download */}
+        {showDownload && (
+          <button
+            onClick={handleDownload}
+            disabled={!employeeStats}
+            title="Download my report"
+            className={`
+              flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-medium
+              transition-all duration-150
+              ${employeeStats
+                ? "text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-blue-900/20 border border-orange-200 dark:border-orange-800"
+                : "text-slate-300 dark:text-slate-600 border border-slate-100 dark:border-slate-800 cursor-not-allowed"
+              }
+            `}
+          >
+            <Download size={18} />
+            <span className="hidden sm:inline">Download</span>
+          </button>
         )}
 
         <div ref={profileRef} className="relative ml-1">
