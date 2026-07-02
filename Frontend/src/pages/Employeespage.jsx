@@ -6,6 +6,11 @@ import { getEmployees, updateEmployee } from "../redux/slices/dataAction";
 const ALL = "All";
 const PER_PAGE = 8;
 
+// ✅ Status ek fixed enum hai — data me kya currently present hai uspar depend nahi karna chahiye.
+// Isse dropdown me hamesha saare valid statuses (jaise REJECTED) dikhenge, chahe filhal
+// koi bhi employee us status me na ho.
+const ALL_STATUSES = ["ACTIVE", "PENDING", "REJECTED"];
+
 const STATUS_BADGE = {
   ACTIVE: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400",
   REJECTED: "bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400",
@@ -37,13 +42,13 @@ export default function EmployeesPage() {
     dispatch(getEmployees());
   }, [dispatch]);
 
+  // Role/Region free-form + growing ho sakte hain, isliye data-driven rakha hai.
   const uniqueRegions = [...new Set(data.map(e => e.region).filter(Boolean))].sort();
-  const uniqueStatuses = [...new Set(data.map(e => e.status).filter(Boolean))].sort();
   const uniqueRoles = [...new Set(data.map(e => e.role).filter(Boolean))].sort();
 
-  const filterStatuses = [ALL, ...uniqueStatuses];
+  const filterStatuses = [ALL, ...ALL_STATUSES];
   const filterRegions = [ALL, ...uniqueRegions];
-  
+
   const filtered = data.filter((e) => {
     const matchesSearch =
       search.trim() === "" ||
@@ -61,7 +66,7 @@ export default function EmployeesPage() {
 
   const startEdit = (emp) => {
     setEditId(emp.emp_id);
-    setEditForm({ role: emp.role ?? null, status: emp.status });
+    setEditForm({ role: emp.role ?? null, status: emp.status ?? ALL_STATUSES[0] });
   };
   const cancelEdit = () => { setEditId(null); setEditForm({}); };
   const saveEdit = (emp_id) => {
@@ -112,7 +117,7 @@ export default function EmployeesPage() {
           </div>
         </div>
 
-        {/* Status — DB se dynamic */}
+        {/* Status — fixed enum */}
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-1">Status</label>
           <div className="flex flex-wrap gap-1.5">
@@ -213,11 +218,11 @@ export default function EmployeesPage() {
                       {/* Status */}
                       <td className="px-5 py-3.5">
                         {editId === emp.emp_id ? (
-                          <select value={editForm.status}
+                          <select value={editForm.status ?? ""}
                             onChange={(e) => setEditForm(f => ({ ...f, status: e.target.value }))}
                             className="text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1 bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 outline-none focus:ring-1 focus:ring-blue-400"
                           >
-                            {uniqueStatuses.map(s => <option key={s}>{s}</option>)}
+                            {ALL_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                           </select>
                         ) : (
                           <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1 rounded-full ${STATUS_BADGE[emp.status] ?? "bg-slate-100 text-slate-500"}`}>

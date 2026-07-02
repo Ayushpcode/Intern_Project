@@ -8,6 +8,8 @@ import { BrandPanel } from "./../components/authComponents/BrandPanel";
 import { LoginCard } from "./../components/authComponents/LoginCard";
 import heroBg1 from "../assets/hero1.png"
 import heroBg2 from "../assets/hero2.png"
+import heroBg3 from "../assets/hero3.png"
+import heroBg4 from "../assets/hero4.png"
 
 export default function PaintLoginPage({ onLogin }) {
   const [splash, setSplash] = useState(true);
@@ -16,7 +18,7 @@ export default function PaintLoginPage({ onLogin }) {
   const [isLoading, setIsLoading] = useState(false);
   const [current, setCurrent] = useState(0);
 
-  const images = [heroBg1, heroBg2];
+  const images = [heroBg1, heroBg2, heroBg3, heroBg4];
 
   useEffect(() => {
     images.forEach(src => {
@@ -29,7 +31,7 @@ export default function PaintLoginPage({ onLogin }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent(prev => (prev + 1) % images.length);
-    }, 4000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 

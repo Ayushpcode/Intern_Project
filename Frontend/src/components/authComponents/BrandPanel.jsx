@@ -37,6 +37,22 @@ export function BrandPanel() {
           flex-direction: column;
           gap: 32px;
         }
+        .bp-vision {
+          display: inline-block;
+          background: linear-gradient(
+            90deg,
+            #e74c3c 0%,
+            #f39c12 20%,
+            #2ecc71 40%,
+            #3498db 60%,
+            #9b59b6 80%,
+            #e91e8c 100%
+          );
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
+        }
         @media (max-width: 1024px) {
           .bp-root {
             display: none;
@@ -100,7 +116,11 @@ export function BrandPanel() {
           >
             Colour every
             <br />
-            <span style={{ fontStyle: "italic", color: "#8e44ad" }}> {/*545a48 */}
+            <span
+              className="bp-vision"
+              style={{ fontStyle: "italic" }}
+            >
+              {/*545a48 */}
               vision
             </span>{" "}
             to life.

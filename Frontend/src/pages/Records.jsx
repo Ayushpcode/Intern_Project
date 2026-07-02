@@ -74,9 +74,7 @@ export default function RecordsPage() {
 
     const fetchRecords = () => dispatch(getTransactions());
     useEffect(() => { fetchRecords(); }, []);
-
-    console.log("Record keys:", records[0]);
-
+    
     const handleDeleteClick = (record) => setConfirmRecord(record);
     const handleCancel = () => setConfirmRecord(null);
     const handleConfirm = async () => {
