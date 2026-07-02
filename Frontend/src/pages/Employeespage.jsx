@@ -46,20 +46,22 @@ export default function EmployeesPage() {
   const uniqueRegions = [...new Set(data.map(e => e.region).filter(Boolean))].sort();
   const uniqueRoles = [...new Set(data.map(e => e.role).filter(Boolean))].sort();
 
-  const filterStatuses = [ALL, ...ALL_STATUSES];
+const filterStatuses = [ALL, ...ALL_STATUSES.filter(s => s !== "PENDING")];
   const filterRegions = [ALL, ...uniqueRegions];
 
-  const filtered = data.filter((e) => {
-    const matchesSearch =
-      search.trim() === "" ||
-      e.emp_name?.toLowerCase().includes(search.toLowerCase()) ||
-      e.emp_id?.toLowerCase().includes(search.toLowerCase());
-    return (
-      matchesSearch &&
-      (statusFilter === ALL || e.status === statusFilter) &&
-      (regionFilter === ALL || e.region === regionFilter)
-    );
-  });
+const filtered = data
+    .filter((e) => e.status !== "PENDING") 
+    .filter((e) => {
+      const matchesSearch =
+        search.trim() === "" ||
+        e.emp_name?.toLowerCase().includes(search.toLowerCase()) ||
+        e.emp_id?.toLowerCase().includes(search.toLowerCase());
+      return (
+        matchesSearch &&
+        (statusFilter === ALL || e.status === statusFilter) &&
+        (regionFilter === ALL || e.region === regionFilter)
+      );
+    });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);

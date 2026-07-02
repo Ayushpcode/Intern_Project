@@ -9,6 +9,7 @@ import {
 } from "../../redux/slices/adminAction";
 
 const ROLES = ["ADMIN", "CEO", "CIO", "EMPLOYEE"];
+const POLL_INTERVAL = 30000; // 30 seconds — apni marzi se adjust kar lo
 
 // ── Approval Popup ────────────────────────────────────────────────────────────
 function ApprovalPopup({ user, onClose, onApprove, onReject }) {
@@ -274,25 +275,42 @@ export default function NotifDropdown({ notifs, setNotifs, open, setOpen }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [fetchError, setFetchError] = useState(null);
 
+  // ── Fetch pending users on mount + poll every 30s (real-time badge) ────────
   useEffect(() => {
-    if (!open) return;
     if (role !== "ADMIN") return;
-    setFetchError(null);
-    dispatch(getPendingEmployees()).then((result) => {
-      if (getPendingEmployees.fulfilled.match(result)) {
-        const mapped = result.payload.data.map((emp) => ({
-          id: emp.ID,
-          name: emp.EMP_NAME,
-          email: emp.EMAIL,
-          avatar: emp.EMP_NAME.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase(),
-          time: new Date(emp.CREATED_AT).toLocaleString(),
-        }));
-        setPendingUsers(mapped);
-      } else {
-        setFetchError("Failed to load pending users.");
-      }
-    });
-  }, [open, dispatch, role]);
+
+    let cancelled = false;
+
+    const fetchPending = () => {
+      setFetchError(null);
+      dispatch(getPendingEmployees()).then((result) => {
+        if (cancelled) return;
+        if (getPendingEmployees.fulfilled.match(result)) {
+          const mapped = result.payload.data.map((emp) => ({
+            id: emp.ID,
+            name: emp.EMP_NAME,
+            email: emp.EMAIL,
+            avatar: emp.EMP_NAME.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase(),
+            time: new Date(emp.CREATED_AT).toLocaleString(),
+          }));
+          setPendingUsers(mapped);
+        } else {
+          setFetchError("Failed to load pending users.");
+        }
+      });
+    };
+
+    // Turant ek baar fetch karo (mount pe / page load pe)
+    fetchPending();
+
+    // Har POLL_INTERVAL ms mein dubara check karo (real-time jaisa feel)
+    const interval = setInterval(fetchPending, POLL_INTERVAL);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [dispatch, role]); // ⚠️ `open` dependency hata di gayi hai
 
   useEffect(() => {
     const fn = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
