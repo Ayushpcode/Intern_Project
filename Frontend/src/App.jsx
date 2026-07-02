@@ -11,7 +11,8 @@ import { WaitingPage } from "./pages/WaitingPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import DataEntryPage from "./pages/DataEntry";
 import RecordsPage from "./pages/Records";
-import { checkAuth } from "./redux/slices/authAction"; // ✅ import
+import EmployeeRecordsPage from "./pages/EmpRecord"; 
+import { checkAuth } from "./redux/slices/authAction";
 
 function AppLayout() {
   const [active, setActive] = useState("dashboard");
@@ -19,6 +20,9 @@ function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notifs, setNotifs] = useState();
+
+  const { role } = useSelector((state) => state.auth); 
+  const isEmployee = role?.toLowerCase() === "employee"; 
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1400);
@@ -33,9 +37,9 @@ function AppLayout() {
     if (active === "data-entry")
       return <DataEntryPage />;
     if (active === "reports")
-      return <RecordsPage />;
+      return isEmployee ? <EmployeeRecordsPage /> : <RecordsPage />; 
     return <PlaceholderPage id={active} />;
-  }, [active]);
+  }, [active, isEmployee]);
 
   return (
     <div className="min-h-screen bg-slate-50 transition-colors duration-300">
@@ -62,7 +66,6 @@ function AppLayout() {
 function PrivateRoute({ children }) {
   const { isAuthenticated, authChecked } = useSelector((state) => state.auth);
 
-  // ✅ Jab tak checkAuth complete na ho, kuch mat dikhao
   if (!authChecked) return (
     <div className="min-h-screen flex items-center justify-center">
       <p className="text-xs text-slate-400">Loading...</p>

@@ -13,7 +13,9 @@ import {
 } from "lucide-react";
 import { getEmployeeStats } from "../redux/slices/dataAction";
 
-export default function EmployeeDashboard() {
+const RECENT_LIMIT = 5;
+
+export default function EmployeeDashboard({ setActive }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { employeeStats: data, employeeStatsLoading } = useSelector(
@@ -28,7 +30,8 @@ export default function EmployeeDashboard() {
 
   const stats = data?.stats;
   const employee = data?.employee;
-  const recentTransactions = data?.recentTransactions ?? [];
+  const allTransactions = data?.recentTransactions ?? [];
+  const recentTransactions = allTransactions.slice(0, RECENT_LIMIT);
 
   const calcChange = (val) => {
     if (val === null || val === undefined) return null;
@@ -84,6 +87,14 @@ export default function EmployeeDashboard() {
       border: "border-l-blue-400",
     },
   ];
+
+  const handleViewAll = () => {
+    console.log("clicked");
+    
+    if (typeof setActive === "function") {
+      setActive("reports");
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -182,9 +193,19 @@ export default function EmployeeDashboard() {
 
       {/* Recent Transactions */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-          Recent Transactions
-        </h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+            Recent Transactions
+          </h3>
+          {/* {allTransactions.length > 0 && (
+            <button
+              onClick={handleViewAll}
+              className="text-xs font-medium text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              View All →
+            </button>
+          )} */}
+        </div>
         <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg overflow-hidden">
           {employeeStatsLoading ? (
             <div className="p-4 space-y-3">
