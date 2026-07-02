@@ -72,9 +72,9 @@ export default function EmployeesTable({ onViewAll }) {
                   </td>
                 </tr>
               ) : (
-                recentEmployees?.map((emp) => (
+                recentEmployees?.map((emp, index) => (
                   <tr
-                    key={emp.emp_id}
+                    key={emp.emp_id ?? `recent-row-${index}`}
                     className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group"
                   >
                     <td className="px-5 py-3.5">
@@ -86,7 +86,7 @@ export default function EmployeesTable({ onViewAll }) {
                           <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
                             {emp.emp_name}
                           </p>
-                          <p className="text-[10px] text-slate-400">{emp.emp_id}</p>
+                          <p className="text-[10px] text-slate-400">{emp.emp_id ?? "—"}</p>
                         </div>
                       </div>
                     </td>
